@@ -7,7 +7,9 @@ from app.models import (
     FreelancerProfile,
     Skill,
     FreelancerSkill,
+    Job,
 )
+
 
 # 1. Import Base và Settings từ ứng dụng
 from app.core.database import Base
