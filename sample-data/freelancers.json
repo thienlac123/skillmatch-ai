@@ -1,0 +1,14 @@
+[
+  {
+    "name": "Frontend Developer (Freelancer A)",
+    "email": "freelancer_a@test.com",
+    "password": "Password123!",
+    "skills": ["React", "JavaScript", "Node.js"]
+  },
+  {
+    "name": "Junior Web Developer (Freelancer B)",
+    "email": "freelancer_b@test.com",
+    "password": "Password123!",
+    "skills": ["HTML", "CSS", "JavaScript"]
+  }
+]

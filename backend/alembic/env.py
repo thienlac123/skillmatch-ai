@@ -8,6 +8,8 @@ from app.models import (
     Skill,
     FreelancerSkill,
     Job,
+    JobSkill,
+    MatchResult
 )
 
 
