@@ -3,6 +3,8 @@ from app.models.freelancer_profile import FreelancerProfile
 from app.models.skill import Skill
 from app.models.freelancer_skill import FreelancerSkill
 from app.models.job import Job
+from app.models.job_skill import JobSkill
+from app.models.match_result import MatchResult
 
 __all__ = [
     "User",
@@ -11,4 +13,6 @@ __all__ = [
     "Skill",
     "FreelancerSkill",
     "Job",
+    "JobSkill",
+    "MatchResult",
 ]

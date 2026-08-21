@@ -1,0 +1,9 @@
+[
+  {
+    "title": "Full-stack JavaScript Developer",
+    "description": "Looking for a fullstack developer proficient in React and Node.js with PostgreSQL experience.",
+    "required_skills": "React, JavaScript, Node.js, PostgreSQL",
+    "budget_min": 500,
+    "budget_max": 1500
+  }
+]
