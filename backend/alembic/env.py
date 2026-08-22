@@ -9,7 +9,8 @@ from app.models import (
     FreelancerSkill,
     Job,
     JobSkill,
-    MatchResult
+    MatchResult,
+    Roadmap,
 )
 
 

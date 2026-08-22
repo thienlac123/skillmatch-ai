@@ -69,3 +69,4 @@ for s_name in skills_list:
 db.commit()
 print(f"✅ Đã tạo Freelancer B thành công: {email_b}")
 db.close()
+
