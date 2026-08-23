@@ -7,6 +7,8 @@ from app.api.routes.freelancers import router as freelancers_router
 from app.api.routes.jobs import router as jobs_router
 from app.api.routes.matches import router as matches_router
 from app.api.routes.roadmaps import router as roadmaps_router
+from app.api.routes.applications import router as applications_router
+from app.api.routes.conversations import router as conversations_router
 from app.api.routes.users import router as users_router
 
 app = FastAPI(
@@ -35,6 +37,8 @@ app.include_router(jobs_router)
 app.include_router(cv_router)
 app.include_router(matches_router)
 app.include_router(roadmaps_router)
+app.include_router(applications_router)
+app.include_router(conversations_router)
 
 
 @app.get("/health")

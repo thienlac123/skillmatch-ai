@@ -68,3 +68,15 @@ def get_roadmap(
         )
         .first()
     )
+
+
+def get_roadmaps_for_freelancer(
+    db: Session,
+    freelancer_id,
+):
+    return (
+        db.query(Roadmap)
+        .filter(Roadmap.freelancer_id == freelancer_id)
+        .order_by(Roadmap.created_at.desc())
+        .all()
+    )

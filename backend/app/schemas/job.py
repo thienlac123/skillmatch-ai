@@ -1,7 +1,7 @@
 from uuid import UUID
 from datetime import datetime
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
 
 
 class JobCreate(BaseModel):
@@ -14,7 +14,7 @@ class JobCreate(BaseModel):
         min_length=10,
     )
 
-    required_skills: str
+    required_skills: str = Field(min_length=1)
 
     budget_min: int | None = Field(
         default=None,
@@ -26,6 +26,16 @@ class JobCreate(BaseModel):
         ge=0,
     )
 
+    @model_validator(mode="after")
+    def validate_budget(self):
+        if (
+            self.budget_min is not None
+            and self.budget_max is not None
+            and self.budget_max < self.budget_min
+        ):
+            raise ValueError("budget_max must be greater than or equal to budget_min")
+        return self
+
 
 class JobUpdate(BaseModel):
     title: str | None = None
@@ -33,6 +43,16 @@ class JobUpdate(BaseModel):
     required_skills: str | None = None
     budget_min: int | None = None
     budget_max: int | None = None
+
+    @model_validator(mode="after")
+    def validate_budget(self):
+        if (
+            self.budget_min is not None
+            and self.budget_max is not None
+            and self.budget_max < self.budget_min
+        ):
+            raise ValueError("budget_max must be greater than or equal to budget_min")
+        return self
 
 
 class JobResponse(BaseModel):

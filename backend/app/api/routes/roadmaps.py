@@ -17,6 +17,7 @@ from app.schemas.roadmap import (
 from app.services.roadmap_service import (
     create_roadmap,
     get_roadmap,
+    get_roadmaps_for_freelancer,
 )
 
 
@@ -24,6 +25,23 @@ router = APIRouter(
     prefix="/roadmaps",
     tags=["Roadmaps"],
 )
+
+
+@router.get(
+    "",
+    response_model=list[RoadmapResponse],
+)
+def list_roadmaps(
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    if current_user.role != UserRole.FREELANCER:
+        raise HTTPException(
+            status_code=403,
+            detail="Only freelancers can view roadmaps",
+        )
+
+    return get_roadmaps_for_freelancer(db, current_user.id)
 
 
 @router.post(

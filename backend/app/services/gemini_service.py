@@ -60,9 +60,18 @@ Important:
         g.get("skill") if isinstance(g, dict) else str(g) for g in gaps
     ]
 
+    if score >= 80:
+        assessment = "Strong match for this job."
+    elif score >= 60:
+        assessment = "Promising match with some gaps to address."
+    elif score >= 40:
+        assessment = "Partial match; targeted upskilling is recommended."
+    else:
+        assessment = "Low match at this time; review the skill gaps before applying."
+
     return (
-        f"1. Overall match: The candidate achieves an estimated match score of {score}%.\n"
-        f"2. Main strengths: Matches well with requirements for {', '.join(matched_names) if matched_names else 'None'}.\n"
-        f"3. Main skill gaps: Missing required skills: {', '.join(gap_names) if gap_names else 'None'}.\n"
-        f"4. Practical recommendation: The candidate is a solid match for the core technical stack. Recommend bridging the missing skill gaps."
+        f"1. Overall match: {assessment} Estimated score: {score}%.\n"
+        f"2. Main strengths: Matches well with {', '.join(matched_names) if matched_names else 'none of the listed skills'}.\n"
+        f"3. Main skill gaps: {', '.join(gap_names) if gap_names else 'None'}.\n"
+        "4. Practical recommendation: Close the listed gaps and make sure the portfolio demonstrates the required work."
     )
