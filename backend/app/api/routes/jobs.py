@@ -60,6 +60,22 @@ def list_jobs(
 
 
 @router.get(
+    "/mine",
+    response_model=list[JobResponse],
+)
+def list_my_jobs(
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    if current_user.role != UserRole.CLIENT:
+        raise HTTPException(
+            status_code=403,
+            detail="Only clients can view their own jobs",
+        )
+    return get_jobs(db, client_id=current_user.id)
+
+
+@router.get(
     "/{job_id}",
     response_model=JobResponse,
 )

@@ -1,6 +1,5 @@
 import re
 
-# Từ điển chuẩn hóa bao quát các mảng công nghệ chính
 SKILL_ALIASES = {
     # --- Frontend & Frameworks ---
     "reactjs": "react",
@@ -17,8 +16,17 @@ SKILL_ALIASES = {
     "tailwind": "tailwind css",
     "tailwindcss": "tailwind css",
     "bootstrap5": "bootstrap",
+    "bootstrap 5": "bootstrap",
     "html": "html5",
     "css": "css3",
+    "sass": "scss",
+    "redux toolkit": "redux",
+    "rtk": "redux",
+    "zustand state": "zustand",
+    "socket.io": "socket.io",
+    "socketio": "socket.io",
+    "websockets": "websocket",
+    "ws": "websocket",
 
     # --- Languages ---
     "js": "javascript",
@@ -29,6 +37,8 @@ SKILL_ALIASES = {
     "c sharp": "csharp",
     "c++": "cpp",
     "c plus plus": "cpp",
+    "dart lang": "dart",
+    "solidity lang": "solidity",
 
     # --- Backend & Frameworks ---
     "node": "node.js",
@@ -50,7 +60,7 @@ SKILL_ALIASES = {
     "aspnet core": "asp.net core",
     "laravel php": "laravel",
 
-    # --- Databases & Caching ---
+    # --- Databases, Caching & ORM ---
     "postgres": "postgresql",
     "postgres sql": "postgresql",
     "psql": "postgresql",
@@ -60,13 +70,18 @@ SKILL_ALIASES = {
     "mongo": "mongodb",
     "redis cache": "redis",
     "elastic": "elasticsearch",
+    "prisma orm": "prisma",
+    "entity framework": "ef core",
+    "entity framework core": "ef core",
+    "ef": "ef core",
+    "mongoose js": "mongoose",
 
     # --- Mobile ---
     "react native": "react-native",
     "reactnative": "react-native",
     "flutter app": "flutter",
 
-    # --- DevOps & Cloud ---
+    # --- DevOps, Cloud & Tools ---
     "k8s": "kubernetes",
     "amazon web services": "aws",
     "google cloud": "gcp",
@@ -75,16 +90,43 @@ SKILL_ALIASES = {
     "docker container": "docker",
     "ci/cd": "cicd",
     "ci cd": "cicd",
+    "github actions": "cicd",
+    "git version control": "git",
+    "github": "git",
+    "gitlab": "git",
+    "kafka": "apache kafka",
+    "rabbitmq": "rabbit-mq",
 
-    # --- AI & Data ---
+    # --- Web3 & Blockchain ---
+    "web3.js": "web3",
+    "web3js": "web3",
+    "ethers.js": "ethers",
+    "ethersjs": "ethers",
+    "hardhat dev": "hardhat",
+    "smart contract": "solidity",
+    "smart contracts": "solidity",
+
+    # --- AI, LLM & Data ---
     "gemini api": "gemini",
     "google gemini": "gemini",
     "chatgpt": "openai",
     "gpt-4": "openai",
+    "gpt4": "openai",
     "machine learning": "ml",
     "deep learning": "dl",
     "pytorch framework": "pytorch",
     "tf": "tensorflow",
+    "rag system": "rag",
+    "langchain framework": "langchain",
+
+    # --- Architecture, API & Testing ---
+    "rest": "rest api",
+    "restful": "rest api",
+    "restful api": "rest api",
+    "graphql api": "graphql",
+    "unit test": "testing",
+    "jest test": "jest",
+    "cypress test": "cypress"
 }
 
 
@@ -95,17 +137,17 @@ def normalize_skill(skill: str) -> str:
     # 1. Chuyển về chữ thường và xóa khoảng trắng đầu/cuối
     value = skill.strip().lower()
 
-    # 2. Xóa các ký tự đặc biệt thừa thãi (giữ lại +, #, ., -)
+    # 2. Xóa các ký tự thừa thãi (giữ lại +, #, ., - và ký tự chữ/số)
     value = re.sub(r"[^\w\s\+\#\.\-]", "", value)
 
-    # 3. Chuẩn hóa khoảng trắng kép
-    value = re.sub(r"\s+", " ", value)
+    # 3. Chuẩn hóa khoảng trắng kép thành khoảng trắng đơn
+    value = re.sub(r"\s+", " ", value).strip()
 
-    # 4. Tra từ điển Alias
+    # 4. Tra trực tiếp từ điển Alias
     if value in SKILL_ALIASES:
         return SKILL_ALIASES[value]
 
-    # 5. Quy tắc động (Dynamic fallback): Bỏ đuôi 'js' hoặc '.js' ở cuối từ
+    # 5. Quy tắc động (Fallback): Cắt bỏ hậu tố 'js' / '.js' nếu không phải ngoại lệ (như nestjs -> nest.js)
     dynamic_cleaned = re.sub(r"(\.js|js)$", "", value).strip()
     if dynamic_cleaned in SKILL_ALIASES:
         return SKILL_ALIASES[dynamic_cleaned]

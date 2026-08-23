@@ -6,6 +6,8 @@ from app.models.job import Job
 from app.models.job_skill import JobSkill
 from app.models.match_result import MatchResult
 from app.models.roadmap import Roadmap
+from app.models.application import Application, ApplicationStatus
+from app.models.conversation import Conversation, Message
 
 __all__ = [
     "User",
@@ -17,4 +19,8 @@ __all__ = [
     "JobSkill",
     "MatchResult",
     "Roadmap",
+    "Application",
+    "ApplicationStatus",
+    "Conversation",
+    "Message",
 ]

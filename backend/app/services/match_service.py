@@ -9,6 +9,7 @@ from app.models.match_result import MatchResult
 from app.models.skill import Skill
 from app.services.gemini_service import generate_match_explanation
 from app.services.matching_service import calculate_match_score
+from app.services.job_service import sync_job_skills
 
 logger = logging.getLogger(__name__)
 
@@ -35,6 +36,15 @@ def create_match(
         .filter(JobSkill.job_id == job_id)
         .all()
     )
+
+    if not job_skills_data:
+        sync_job_skills(db, job)
+        job_skills_data = (
+            db.query(JobSkill, Skill.name)
+            .join(Skill, Skill.id == JobSkill.skill_id)
+            .filter(JobSkill.job_id == job_id)
+            .all()
+        )
 
     result = calculate_match_score(
         freelancer_skills_data=freelancer_skills_data,

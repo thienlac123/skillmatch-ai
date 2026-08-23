@@ -82,6 +82,7 @@ async def upload_cv(
         db.add(profile)
 
     profile.cv_text = extracted_text
+    profile.cv_filename = filename
 
     db.commit()
 

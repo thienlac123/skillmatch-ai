@@ -9,6 +9,48 @@ from app.schemas.job import JobCreate, JobUpdate
 from app.services.skill_normalizer import normalize_skill
 
 
+def sync_job_skills(db: Session, job: Job, replace: bool = False):
+    if replace:
+        db.query(JobSkill).filter(JobSkill.job_id == job.id).delete()
+
+    existing_skill_ids = {
+        row.skill_id
+        for row in db.query(JobSkill).filter(JobSkill.job_id == job.id).all()
+    }
+
+    raw_skills = [
+        value.strip()
+        for value in job.required_skills.split(",")
+        if value.strip()
+    ]
+
+    for index, skill_name in enumerate(raw_skills):
+        normalized = normalize_skill(skill_name)
+        skill = (
+            db.query(Skill)
+            .filter(Skill.normalized_name == normalized)
+            .first()
+        )
+        if skill is None:
+            skill = Skill(name=skill_name, normalized_name=normalized)
+            db.add(skill)
+            db.flush()
+
+        if skill.id in existing_skill_ids:
+            continue
+
+        importance = 5.0 if index < 2 else 3.0 if index == 2 else 2.0
+        required_level = "advanced" if index < 2 else "intermediate"
+        db.add(JobSkill(
+            job_id=job.id,
+            skill_id=skill.id,
+            importance=importance,
+            required_level=required_level,
+        ))
+
+    db.commit()
+
+
 def create_job(
     db: Session,
     client: User,
@@ -28,54 +70,20 @@ def create_job(
     db.commit()
     db.refresh(job)
 
-    # 2. Tự động bóc tách required_skills tạo skills và job_skills
-    if data.required_skills:
-        raw_skills = [
-            s.strip() for s in data.required_skills.split(",") if s.strip()
-        ]
-
-        for index, skill_name in enumerate(raw_skills):
-            normalized = normalize_skill(skill_name)
-
-            # Tìm hoặc tạo kỹ năng trong bảng skills
-            skill = (
-                db.query(Skill).filter(Skill.name.ilike(skill_name)).first()
-            )
-            if not skill:
-                skill = Skill(name=skill_name, normalized_name=normalized)
-                db.add(skill)
-                db.commit()
-                db.refresh(skill)
-
-            # Trọng số: 2 skill đầu có importance = 5.0, skill 3 = 3.0, skill 4 trở đi = 2.0
-            if index == 0 or index == 1:
-                importance_val = 5.0
-                req_level = "advanced"
-            elif index == 2:
-                importance_val = 3.0
-                req_level = "intermediate"
-            else:
-                importance_val = 2.0
-                req_level = "intermediate"
-
-            job_skill = JobSkill(
-                job_id=job.id,
-                skill_id=skill.id,
-                importance=importance_val,
-                required_level=req_level,
-            )
-            db.add(job_skill)
-
-        db.commit()
+    sync_job_skills(db, job)
 
     return job
 
 
 def get_jobs(
     db: Session,
+    client_id=None,
 ):
+    query = db.query(Job)
+    if client_id is not None:
+        query = query.filter(Job.client_id == client_id)
     return (
-        db.query(Job)
+        query
         .order_by(Job.created_at.desc())
         .all()
     )
@@ -105,6 +113,7 @@ def update_job(
 
     if data.required_skills is not None:
         job.required_skills = data.required_skills
+        sync_job_skills(db, job, replace=True)
 
     if data.budget_min is not None:
         job.budget_min = data.budget_min

@@ -37,6 +37,11 @@ class FreelancerProfile(Base):
         nullable=True,
     )
 
+    cv_filename: Mapped[str | None] = mapped_column(
+        Text,
+        nullable=True,
+    )
+
     user = relationship(
         "User",
         backref="freelancer_profile",
