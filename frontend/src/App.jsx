@@ -124,14 +124,6 @@ function App() {
           }
         />
         <Route
-          path="/matches/new"
-          element={
-            <ProtectedRoute>
-              <MatchResult />
-            </ProtectedRoute>
-          }
-        />
-        <Route
           path="/roadmaps"
           element={
             <ProtectedRoute>

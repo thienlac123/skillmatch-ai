@@ -11,6 +11,7 @@ class RoadmapResponse(BaseModel):
     id: UUID
     freelancer_id: UUID
     job_id: UUID
+    goal: str
     items: list
     created_at: object
 

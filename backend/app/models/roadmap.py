@@ -1,7 +1,7 @@
 import uuid
 from datetime import datetime
 
-from sqlalchemy import DateTime, JSON, ForeignKey, String
+from sqlalchemy import DateTime, JSON, ForeignKey, String, Text
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column
 
@@ -33,6 +33,12 @@ class Roadmap(Base):
             ondelete="CASCADE",
         ),
         nullable=False,
+    )
+
+    goal: Mapped[str] = mapped_column(
+        Text,
+        nullable=False,
+        default="Close the identified skill gaps for this job",
     )
 
     items: Mapped[list] = mapped_column(

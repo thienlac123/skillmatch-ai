@@ -3,7 +3,6 @@ import { Link, useParams } from "react-router-dom";
 import { 
   ArrowLeft, 
   User, 
-  Briefcase, 
   FileText, 
   Award, 
   Clock, 

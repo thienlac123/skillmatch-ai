@@ -71,6 +71,12 @@ function RoadmapDetail() {
                 <Calendar className="w-3.5 h-3.5" />
                 <span>Khởi tạo lúc: {new Date(roadmap.created_at).toLocaleString("vi-VN")}</span>
               </p>
+              {roadmap.goal && (
+                <div className="mt-5 rounded-xl border border-blue-100 bg-blue-50/60 p-4">
+                  <p className="text-xs font-bold uppercase tracking-wider text-blue-700">Mục tiêu học tập</p>
+                  <p className="mt-1 text-sm leading-relaxed text-slate-700">{roadmap.goal}</p>
+                </div>
+              )}
             </div>
 
             {/* List Roadmap Cards */}

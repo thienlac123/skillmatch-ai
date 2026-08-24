@@ -70,9 +70,11 @@ def create(
 
     except ValueError as error:
         raise HTTPException(
-            status_code=404,
+            status_code=422,
             detail=str(error),
         )
+    except RuntimeError as error:
+        raise HTTPException(status_code=503, detail=str(error))
 
 
 @router.get(
