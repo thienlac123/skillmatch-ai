@@ -9,11 +9,11 @@ import {
   Users, 
   AlertCircle, 
   Loader2, 
-  CheckCircle2 
 } from "lucide-react";
 import Navbar from "../components/Navbar";
 import { getJob } from "../api/jobs";
 import { getCurrentUser } from "../api/auth";
+import { createMatch } from "../api/matches";
 
 function JobDetail() {
   const { id } = useParams();
@@ -23,6 +23,7 @@ function JobDetail() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [user, setUser] = useState(null);
+  const [matching, setMatching] = useState(false);
 
   useEffect(() => {
     const loadJob = async () => {
@@ -42,6 +43,18 @@ function JobDetail() {
 
     loadJob();
   }, [id]);
+
+  const handleMatch = async () => {
+    setMatching(true);
+    setError("");
+    try {
+      const match = await createMatch(job.id);
+      navigate(`/matches/${match.id}`);
+    } catch (requestError) {
+      setError(requestError.response?.data?.detail || "Không thể tính toán điểm tương thích cho công việc này.");
+      setMatching(false);
+    }
+  };
 
   const skillList = job?.required_skills
     ? job.required_skills.split(",").map((s) => s.trim()).filter(Boolean)
@@ -127,11 +140,12 @@ function JobDetail() {
   {user?.role === "freelancer" && (
     <>
       <button
-        onClick={() => navigate(`/matches/${job.id}`)}
+        onClick={handleMatch}
+        disabled={matching}
         className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-semibold text-sm shadow-md shadow-blue-500/25 transition-all cursor-pointer"
       >
         <Sparkles className="w-4 h-4 text-amber-300" />
-        <span>Đánh giá độ tương thích AI</span>
+        <span>{matching ? "Đang phân tích..." : "Đánh giá độ tương thích AI"}</span>
       </button>
 
       <Link

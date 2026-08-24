@@ -12,7 +12,7 @@ import {
   Bot
 } from "lucide-react";
 import Navbar from "../components/Navbar";
-import { createMatch } from "../api/matches";
+import { getMatch } from "../api/matches";
 import MatchScore from "../components/MatchScore";
 import SkillGap from "../components/SkillGap";
 
@@ -21,31 +21,35 @@ function MatchResult() {
   const { id } = useParams();
   const navigate = useNavigate();
 
-  const jobId = id || searchParams.get("job_id");
+  const matchId = id;
   const [result, setResult] = useState(null);
-  const [loading, setLoading] = useState(Boolean(jobId));
-  const [error, setError] = useState(jobId ? "" : "Chưa có công việc nào được chọn để tính điểm tương thích.");
+  const jobId = result?.job_id || searchParams.get("job_id");
+  const [loading, setLoading] = useState(Boolean(matchId));
+  const [error, setError] = useState(matchId ? "" : "Chưa có kết quả tương thích nào được chọn.");
   const [roadmapLoading, setRoadmapLoading] = useState(false);
 
   useEffect(() => {
     const calculateMatch = async () => {
       try {
-        const data = await createMatch(jobId);
+        const data = await getMatch(matchId);
         setResult(data);
-      } catch {
-        setError("Không thể tính toán điểm tương thích cho công việc này.");
+      } catch (requestError) {
+        setError(
+          requestError.response?.data?.detail ||
+          "Không thể tải kết quả tương thích. Hãy đăng nhập đúng tài khoản Freelancer đã tạo kết quả này."
+        );
       } finally {
         setLoading(false);
       }
     };
 
-    if (jobId) calculateMatch();
-  }, [jobId]);
+    if (matchId) calculateMatch();
+  }, [matchId]);
 
   const handleRoadmap = async () => {
     setRoadmapLoading(true);
     try {
-      navigate(`/roadmaps/new?job_id=${jobId}`);
+      navigate(`/roadmaps/new?job_id=${result.job_id}`);
     } finally {
       setRoadmapLoading(false);
     }
@@ -120,7 +124,7 @@ function MatchResult() {
 
       <main className="flex-1 max-w-4xl w-full mx-auto px-4 sm:px-6 py-8 sm:py-10">
         <Link
-          to={`/jobs/${jobId}`}
+          to={jobId ? `/jobs/${jobId}` : "/jobs"}
           className="inline-flex items-center gap-2 text-sm font-semibold text-slate-500 hover:text-slate-900 transition-colors mb-6"
         >
           <ArrowLeft className="w-4 h-4" />

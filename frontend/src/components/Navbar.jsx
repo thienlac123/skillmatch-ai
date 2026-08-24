@@ -16,28 +16,22 @@ import { getCurrentUser } from "../api/auth";
 
 function Navbar() {
   const [role, setRole] = useState(null);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const location = useLocation();
+  const isAuthenticated = Boolean(localStorage.getItem("access_token"));
 
   useEffect(() => {
     const token = localStorage.getItem("access_token");
     if (token) {
-      setIsAuthenticated(true);
       getCurrentUser()
         .then((user) => setRole(user?.role))
         .catch(() => {
           setRole(null);
-          setIsAuthenticated(false);
         });
-    } else {
-      setIsAuthenticated(false);
-      setRole(null);
     }
   }, [location.pathname]);
 
   const handleLogout = () => {
     localStorage.removeItem("access_token");
-    setIsAuthenticated(false);
     setRole(null);
     window.location.href = "/login";
   };

@@ -1,4 +1,4 @@
-import { BookOpen, Clock, CheckCircle2, ChevronRight } from "lucide-react";
+import { BookOpen, Clock } from "lucide-react";
 
 function RoadmapCard({ item }) {
   const skillName = item?.skill || item?.name || "Kỹ năng";
@@ -13,7 +13,7 @@ function RoadmapCard({ item }) {
       case "low":
         return "bg-slate-100 text-slate-700 border-slate-200";
       default:
-        return "bg-amber-50 text-amber-700 border-amber-200";
+        return "bg-amber-50 text-amber-700 borde  r-amber-200";
     }
   };
 

@@ -8,7 +8,6 @@ import {
   Target, 
   AlertCircle, 
   Loader2,
-  BookOpen
 } from "lucide-react";
 import Navbar from "../components/Navbar";
 import { generateRoadmap, getRoadmaps } from "../api/roadmaps";
@@ -21,34 +20,54 @@ function Roadmap() {
   const [roadmap, setRoadmap] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [retryKey, setRetryKey] = useState(0);
 
   useEffect(() => {
+    let isCancelled = false;
+
     const load = async () => {
+      setLoading(true);
+      setError("");
+      setRoadmap(null);
+
       try {
         if (jobId) {
           const data = await generateRoadmap(jobId);
-          setRoadmap(data);
+          if (!isCancelled) {
+            setRoadmap(data);
+          }
         } else {
           const data = await getRoadmaps();
-          setRoadmap(data);
+          if (!isCancelled) {
+            setRoadmap(data);
+          }
         }
-      } catch {
-        setError("Không thể tạo hoặc tải lộ trình học tập cá nhân hóa.");
+      } catch (requestError) {
+        if (!isCancelled) {
+          setError(
+            requestError.response?.data?.detail ||
+            "Không thể tạo hoặc tải lộ trình học tập cá nhân hóa."
+          );
+        }
       } finally {
-        setLoading(false);
+        if (!isCancelled) {
+          setLoading(false);
+        }
       }
     };
 
     load();
-  }, [jobId]);
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [jobId, retryKey]);
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col">
       <Navbar />
 
       <main className="flex-1 max-w-4xl w-full mx-auto px-4 sm:px-6 py-8 sm:py-10">
-        
-        {/* Header */}
         <div className="pb-8 border-b border-slate-200 mb-8">
           <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-blue-600 mb-1.5">
             <Sparkles className="w-4 h-4" />
@@ -65,7 +84,19 @@ function Roadmap() {
         {error && (
           <div className="mb-6 p-4 rounded-xl bg-rose-50 border border-rose-200 flex items-center gap-3 text-rose-800 text-sm">
             <AlertCircle className="w-5 h-5 text-rose-600 shrink-0" />
-            <span>{error}</span>
+            <div className="flex-1">
+              <p>{error}</p>
+              <button
+                type="button"
+                onClick={() => {
+                  setError("");
+                  setRetryKey((current) => current + 1);
+                }}
+                className="mt-3 rounded-lg bg-rose-700 px-3 py-1.5 text-xs font-semibold text-white hover:bg-rose-800 cursor-pointer"
+              >
+                Thử lại
+              </button>
+            </div>
           </div>
         )}
 
@@ -96,7 +127,6 @@ function Roadmap() {
           </div>
         )}
 
-        {/* Goal Card when Single Roadmap */}
         {!Array.isArray(roadmap) && roadmap?.goal && (
           <div className="bg-white border border-blue-200 rounded-2xl p-6 shadow-xs mb-6 bg-gradient-to-r from-blue-50/50 to-white">
             <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-blue-600 mb-2">
@@ -109,7 +139,6 @@ function Roadmap() {
           </div>
         )}
 
-        {/* List of Roadmaps OR Single Roadmap Items */}
         {Array.isArray(roadmap) ? (
           <div className="space-y-4">
             {roadmap.map((entry) => (
